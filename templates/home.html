@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href='static/home.css' />
+</head>
+<div class="hero-image">
+    <form method="POST" action="/logout" id="logout"></form>
+    <button id="su_button" form="logout" value="Submit" style="float:right;">Log out</button>
+
+    <h1>{{name}}'s Movie Explorer Page</h1>
+    <h2>{{movie["title"]}}</h2>
+    <h3>{{rating}}</h3>
+    <h3>{{movie["overview"]}}</h3>
+
+    <body>
+
+
+        <p>{{movie["genres"]}}</p>
+        <img src="{{movie['pic']}}" width="400" height="600" />
+        <p>
+            <a href="{{movie['wiki']}}"> Find the movie Wikipedia here!</a>
+        </p>
+        <!-- drop down syntax from java at point -->
+        <form method="POST" action="/handle_review" id="review"><label> Rate this movie:
+            </label>
+            <select name="rating">
+                <option value="1"> 1 </option>
+                <option value="2"> 2 </option>
+                <option value="3"> 3</option>
+                <option value="4"> 4</option>
+                <option value="5"> 5</option>
+            </select>
+            <input type="text" name="com" placeholder="Leave a Comment" />
+            <input type="submit" value="Submit" />
+            <input type="hidden" id="cur_id" name="cur_id" value="{{ movie['id']}}">
+        </form>
+        <h3>Comments:</h3>
+        <ol>
+            {% if len_com != 0 %}
+            {%for i in range(len_com)%}
+            <p><b>{{comments[i].user_name}}: </b> {{comments[i].com}}</p>
+            {%endfor%}
+            {% else %}
+            <h4>No comments yet.</h4>
+            {% endif %}
+
+        </ol>
+    </body>
+
+</div>
+
+</html>

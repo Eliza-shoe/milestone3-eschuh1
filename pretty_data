@@ -1,0 +1,5 @@
+imgs = {
+    1 : ['https://www.themoviedb.org/t/p/w600_and_h900_bestv2/ppd84D2i9W8jXmsyInGyihiSyqz.jpg'],
+    2 : ['https://www.themoviedb.org/t/p/w600_and_h900_bestv2/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg'],
+    3 : ['https://www.themoviedb.org/t/p/w600_and_h900_bestv2/oe3XoAL0he16IWLHFzdg32q5ty6.jpg']
+    }

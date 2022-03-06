@@ -1,0 +1,8 @@
+Flask
+requests
+python-dotenv
+wikipedia-api
+flask-login
+Flask-SQLAlchemy
+psycopg2
+psycopg2-binary

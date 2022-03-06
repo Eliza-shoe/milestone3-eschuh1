@@ -1,0 +1,20 @@
+.hero-image {
+    background-image: url('https://www.maxpixel.net/static/photo/1x/Red-Film-Screening-Curtain-Cinema-Theater-Hall-2556157.jpg');
+    background-color: darkmagenta; 
+    height: 1000px; 
+    background-position: center;
+    background-repeat: no-repeat; 
+    background-size: cover; /* formatting stolen from geeks to geeks */
+    position: relative;
+  }
+
+
+body {
+    background-color: darkred;
+    font-family: fantasy;
+    text-align: center;
+    color: white
+}
+a{
+  color:cyan
+}

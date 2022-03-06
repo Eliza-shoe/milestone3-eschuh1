@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href='static/style.css' />
+</head>
+<div class="hero-image">
+
+    <h1>Welcome to Movie Explorer!</h1>
+    <h2>Please Sign Up!</h2>
+
+    <body>
+        {% with messages = get_flashed_messages() %}
+        <!-- next 4 lines taken from digital ocean article in specs given -->
+        {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}. Go to <a href="{{ url_for('login') }}">login page</a>. </div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" action="/add_user" id="add_user">
+            <input type="text" name="username" placeholder="Username" />
+            <input type="text" name="password" placeholder="Password" />
+            <input type="submit" value="Submit" />
+        </form>
+
+    </body>
+</div>
+
+</html>

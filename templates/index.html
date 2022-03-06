@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href='static/style.css' />
+</head>
+<div class="hero-image">
+
+    <h1>Welcome to Movie Explorer!</h1>
+    <h2>Please login!</h2>
+
+    <body>
+
+        {% with messages = get_flashed_messages() %}
+        <!-- next 4 lines taken from digital ocean article in specs given -->
+        {% if messages %}
+        <div class="notification is-danger">
+            {{ messages[0] }}. Please try again or <a href="{{ url_for('sign_up') }}">sign up.</a>. </div>
+        {% endif %}
+        {% endwith %}
+        <form method="POST" action="/handle_login" id="login">
+            <input type="text" name="username" placeholder="Username" />
+            <input type="text" name="password" placeholder="Password" />
+            <input type="submit" value="Submit" />
+        </form>
+
+        <form method="POST" action="/sign_up" id="signup"></form>
+        <button id="su_button" form="signup" value="Submit">Sign Up!</button>
+    </body>
+</div>
+
+</html>
