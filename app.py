@@ -14,6 +14,7 @@
 # disabled because my bare except does what I want it to
 
 import os
+import pdb
 from random import randint
 import flask as f
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -282,13 +283,19 @@ bp = f.Blueprint(
 @fl.login_required
 def index():
 
-    return f.render_template("index.html")
+    return f.render_template("profile.html")
 
 
 @bp.route("/get_comments", methods=["GET", "POST"])
 def get_comments():
-    user = User.query.filter_by(name=fl.current_user.name)
-    return f.jsonify(user.comments)
+    print("\n\n\n")
+    user = User.query.filter_by(name=fl.current_user.name).first()
+    comments = user.comments
+    print(f.jsonify(comments))
+    if len(comments) != 0:
+        return f.jsonify(user.comments)
+    else:
+        return f.jsonify("No comments yet")
 
 
 app.register_blueprint(bp)

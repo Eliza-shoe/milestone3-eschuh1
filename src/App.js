@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 
 function App() {
 
-  function Header(props) {
+  function Header() {
     Return(
       <header>
         <h1>{props.title}</h1>
@@ -31,8 +31,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <h1>Backstage</h1>
         <button onClick={seeComments}>Edit Comments</button>
-        <p id="seeComments"></p>
+        <p id="commentList"></p>
       </header>
     </div>
   );
