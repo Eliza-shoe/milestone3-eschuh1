@@ -5,6 +5,9 @@
     <link rel="stylesheet" href='static/home.css' />
 </head>
 <div class="hero-image">
+    <form method="POST" action="/profile" id="to_profile"></form>
+    <button id="su_button" form="to_profile" value="Submit" style="float:left;">Profile</button>
+
     <form method="POST" action="/logout" id="logout"></form>
     <button id="su_button" form="logout" value="Submit" style="float:right;">Log out</button>
 

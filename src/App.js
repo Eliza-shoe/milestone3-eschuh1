@@ -1,26 +1,38 @@
-import logo from './logo.svg';
+
 import './App.css';
-import React from 'react';
+import { React, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
 
 function App() {
 
-  function handleClick() {
-    const new_fact = fetch('/fun_fact').then(response => response.json())
+  function Header(props) {
+    Return(
+      <header>
+        <h1>{props.title}</h1>
+      </header>
+    );
+  }
+
+  function editComments() {
+    const commentList = fetch('/get_comments').then(response => response.json())
       .then(data => {
         ReactDOM.render(data,
-          document.getElementById("fact-of-the-day"));
+          document.getElementById("seeComments"));
       });
-    return new_fact;
+    return commentList;
+  }
+
+  function listComments() {
+
+
   }
 
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <button onClick={handleClick}>Gimme a fact!</button>
-        <p id="fact-of-the-day"></p>
+        <button onClick={seeComments}>Edit Comments</button>
+        <p id="seeComments"></p>
       </header>
     </div>
   );

@@ -269,4 +269,28 @@ def logout():
     return f.redirect(f.url_for("login"))
 
 
+# setup for react
+
+bp = f.Blueprint(
+    "bp",
+    __name__,
+    template_folder="./static/react",
+)
+
+# route for serving React page
+@bp.route("/profile", methods=["GET", "POST"])
+@fl.login_required
+def index():
+
+    return f.render_template("index.html")
+
+
+@bp.route("/get_comments", methods=["GET", "POST"])
+def get_comments():
+    user = User.query.filter_by(name=fl.current_user.name)
+    return f.jsonify(user.comments)
+
+
+app.register_blueprint(bp)
+
 app.run(host=os.getenv("IP", "0.0.0.0"), port=os.getenv("PORT", "8080"), debug=True)
