@@ -14,7 +14,7 @@
 # disabled because my bare except does what I want it to
 
 import os
-import pdb
+import json
 from random import randint
 import flask as f
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -121,7 +121,7 @@ db.create_all()
 @app.route("/", methods=["GET", "POST"])
 def login():
     """Landing page"""
-    return f.render_template("index.html")
+    return f.render_template("landing.html")
 
 
 @login_manager.user_loader
@@ -283,21 +283,31 @@ bp = f.Blueprint(
 @fl.login_required
 def index():
 
-    return f.render_template("profile.html")
+    return f.render_template("index.html")
 
 
 @bp.route("/get_comments", methods=["GET", "POST"])
+@fl.login_required
 def get_comments():
     print("\n\n\n")
     user = User.query.filter_by(name=fl.current_user.name).first()
-    comments = user.comments
-    print(f.jsonify(comments))
-    if len(comments) != 0:
-        return f.jsonify(user.comments)
+    c_dict = {}
+    hi = "hi"
+    if len(user.comments) != 0:
+        for c in user.comments:
+            info = {
+                "rating": c.rating,
+                "comment": c.com,
+                "movie": c.movie_id,
+            }
+            c_dict[str(c.id)] = info
+
+        return f.jsonify(c_dict)
     else:
         return f.jsonify("No comments yet")
 
 
 app.register_blueprint(bp)
 
-app.run(host=os.getenv("IP", "0.0.0.0"), port=os.getenv("PORT", "8080"), debug=True)
+if __name__ == "__main__":
+    app.run(host=os.getenv("IP", "0.0.0.0"), port=os.getenv("PORT", "8080"), debug=True)

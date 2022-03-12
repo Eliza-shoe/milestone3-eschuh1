@@ -2,39 +2,45 @@
 import './App.css';
 import { React, useState, useEffect } from 'react';
 import ReactDOM from 'react-dom'
+//import JsonDataDisplay from './jsonParser';
+//import { render } from '@testing-library/react';
+
+
+/*help from better.dev*/
 
 function App() {
+  let data = "";
+  const [com, setCom] = useState(data);
+  useEffect(() => { }, [com])
 
-  function Header() {
-    Return(
-      <header>
-        <h1>{props.title}</h1>
-      </header>
-    );
+  async function getComments() {
+    const response = await fetch('/get_comments');
+    data = await response.json();
+    console.log(Object.keys(data))
+
+
+
+    let test_var = Object.keys(data).map((review) => (
+      <li>
+        {data[review].rating}: {data[review].comment} , {data[review].movie}
+      </li>
+    ))
+
+    console.log(test_var)
+    ReactDOM.render(test_var, document.getElementById('com'));
+
+    return (null)
   }
 
-  function editComments() {
-    const commentList = fetch('/get_comments').then(response => response.json())
-      .then(data => {
-        ReactDOM.render(data,
-          document.getElementById("seeComments"));
-      });
-    return commentList;
-  }
-
-  function listComments() {
-
-
-  }
 
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Backstage</h1>
-        <button onClick={seeComments}>Edit Comments</button>
-        <p id="commentList"></p>
-      </header>
+      <h1>Backstage</h1>
+      <div className="">
+        <button onClick={getComments}>Edit Comments</button>
+        <p id="com"></p>
+      </div>
     </div>
   );
 }
