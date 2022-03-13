@@ -14,6 +14,11 @@ import { selectOptions } from '@testing-library/user-event/dist/select-options';
 
 function App() {
   let data = "";
+
+  function render() {
+    fetchComments().then(jsonData => setReview({ type: 'setState', payload: jsonData })).then(_ => GetComments())
+  }
+
   function reducer(movieReviews, action) {
 
     switch (action.type) {
@@ -59,12 +64,14 @@ function App() {
       let newValue = movieReviews[review]
       newValue.rating = Number(event.target.value)
       setReview({ type: 'setValue', key: review, value: newValue })
+      render()
     };
 
     const handleComment = review => (event) => {
       let newValue = movieReviews[review]
       newValue.comment = event.target.value
-      dispatchEvent({ type: 'setValue', key: review, value: newValue })
+      setReview({ type: 'setValue', key: review, value: newValue })
+      render()
     };
 
     if (movieReviews === null) {
@@ -77,7 +84,7 @@ function App() {
       return null
     }
     console.log(movieReviews)
-    let test_var = Object.keys(movieReviews).map((review) => (
+    let Boxes = Object.keys(movieReviews).map((review) => (
 
       <Box
         component="form"
@@ -110,7 +117,7 @@ function App() {
 
     ))
 
-
+    ReactDOM.render(Boxes, document.getElementById('com'));
 
     return (null)
   }
@@ -120,9 +127,7 @@ function App() {
       <h1>My Backstage</h1>
       <div className="">
         <button onClick={function () {
-          fetchComments().then(jsonData => setReview({ type: 'setState', payload: jsonData })).then(_ => GetComments())
-
-
+          { render() }
         }}
         >Edit Comments</button>
         <p id="com"></p>
