@@ -42,7 +42,7 @@ if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
 
 db = f_sql.SQLAlchemy(app)
 login_manager = fl.LoginManager(app)
-login_manager.login_view = "app.login"
+login_manager.login_view = "login"
 login_manager.init_app(app)
 
 
