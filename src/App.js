@@ -1,14 +1,16 @@
 
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { FormControlUnstyled } from '@mui/base';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import SendIcon from '@mui/material/Button';
+
 
 /*help from better.dev and mui.com and pavel pov on discord*/
+
+
+
 
 
 
@@ -16,39 +18,49 @@ function App() {
   let data = "";
   let deleted = {};
 
-  function render() {
-    fetchComments().then(jsonData => setReview({ type: 'setState', payload: jsonData })).then(_ => GetComments())
-  }
-
   function reducer(movieReviews, action) {
 
     switch (action.type) {
       case 'setValue':
+        console.log("Setting value")
         let movie = action.key
         let review = action.value
         movieReviews[movie] = review
-        movieReviews = { ...movieReviews }
-        console.log(movieReviews)
         return movieReviews
       case 'setState':
-        movieReviews = initReducer(action.payload)
-        return movieReviews
+        console.log("logging payload")
+        console.log(action.payload)
+        console.log("logging state 1")
+        console.log(movieReviews)
+        movieReviews = action.payload
+        console.log("logging state 2")
+        console.log(movieReviews)
+        //GetComments()
+        return action.payload
       default:
         throw new Error();
     }
 
   }
 
-  function initReducer(data) {
-    return data
+  function initReducer() {
+    fetchComments()
+    return null
   }
+
 
   const [movieReviews, setReview] = React.useReducer(reducer, null, initReducer)
 
   async function fetchComments() {
+    console.log("calling fetchComments here")
     const response = await fetch('/get_comments');
     data = await response.json();
-    return data
+    setReview({ type: 'setState', payload: data })
+
+    console.log("logging state")
+    console.log(movieReviews)
+    await GetComments()
+    return null
   }
 
   async function GetComments() {
@@ -57,20 +69,20 @@ function App() {
       let newValue = movieReviews[review]
       newValue.rating = Number(event.target.value)
       setReview({ type: 'setValue', key: review, value: newValue })
-      render()
+      GetComments()
     };
 
     const handleComment = review => (event) => {
       let newValue = movieReviews[review]
       newValue.comment = event.target.value
       setReview({ type: 'setValue', key: review, value: newValue })
-      render()
+      GetComments()
     };
 
     if (movieReviews === null) {
       let failScreen = (
         <div>
-          <header> Please click again</header>
+          <header> Click Edit Reviews</header>
         </div>
       )
       ReactDOM.render(failScreen, document.getElementById('com'));
@@ -117,37 +129,35 @@ function App() {
 
     ))
 
+
     let submitButton = <button onClick={function () {
       { handleSubmit() }
-    }} endIcon={<SendIcon />}>Submit Changes</button>
+    }}>Submit Changes</button>
 
-    ReactDOM.render(submitButton, document.getElementById('com'));
-    ReactDOM.render(Boxes, document.getElementById('submit'));
-    ReactDOM.render(submitButton, document.getElementById('com'));
+    ReactDOM.render(Boxes, document.getElementById('com'));
+    ReactDOM.render(submitButton, document.getElementById('submit'));
     return (null)
   }
 
   function handleDelete(review) {
-    deleted.push(review);
-    console.log(deleted);
+    deleted[review] = ''
     ReactDOM.render("Your comment will be deleted after submission", document.getElementById('del'));
+    GetComments()
   }
 
-  function handleSubmit() {
-    console.log("reviewList1")
-    console.log(movieReviews)
-    console.log("Stringified")
-    console.log(JSON.stringify(movieReviews))
-    console.log(deleted)
-    fetch('/update_reviews',
+  async function handleSubmit() {
+
+    const deleteFetch = fetch('/delete_reviews',
+      { method: 'POST', body: JSON.stringify(deleted), }).then(_ => console.log("Deleted reviews")).then(_ => fetchComments())
+    await deleteFetch;
+    console.log("After returning fetch:")
+    const updateFetch = fetch('/update_reviews',
       { method: 'POST', body: JSON.stringify(movieReviews), })
 
-    //fetch('/delete_reviews',
-    //  { method: 'POST', body: str(deleted), })
+
+    ReactDOM.render("Your reviews have been updated. Press Edit Reviews to see changes", document.getElementById('del'));
+    deleted = {}
     return null;
-
-
-
   }
 
 
@@ -156,7 +166,7 @@ function App() {
       <h1>My Backstage</h1>
       <div className="Edit Reviews">
         <button onClick={function () {
-          { render() }
+          { fetchComments(); }
         }}
         >Edit Reviews</button>
         <p id="com"></p>

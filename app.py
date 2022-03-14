@@ -23,7 +23,6 @@ import flask_sqlalchemy as f_sql
 from tmdb import get_tmdb, get_genre
 from pretty_data import pretty_data
 from wiki import get_wiki
-from sqlalchemy import update
 
 
 # Set up globals
@@ -202,9 +201,6 @@ def home():
 
         mov = Movie.query.filter_by(my_id=data["id"]).first()
         comments = mov.comments
-        if len(comments) != 0:
-            plz = comments[0].user_name
-            print(plz)
         rated = mov.rating
         if rated != 0:
             rating = str(rated)
@@ -258,8 +254,6 @@ def handle_review():
             mov.rating = (mov.rating + int(data["rating"])) / 2
         db.session.add(new_comment)
         db.session.commit()
-
-    print(data)
     return f.redirect(f.url_for("home"))
 
 
@@ -293,15 +287,14 @@ def get_comments():
     print("\n\n\n")
     user = User.query.filter_by(name=fl.current_user.name).first()
     c_dict = {}
-    hi = "hi"
     if len(user.comments) != 0:
-        for c in user.comments:
+        for ele in user.comments:
             info = {
-                "rating": c.rating,
-                "comment": c.com,
-                "movie": c.movie_id,
+                "rating": ele.rating,
+                "comment": ele.com,
+                "movie": ele.movie_id,
             }
-            c_dict[str(c.id)] = info
+            c_dict[str(ele.id)] = info
 
         return f.jsonify(c_dict)
     else:
@@ -311,53 +304,41 @@ def get_comments():
 @bp.route("/update_reviews", methods=["GET", "POST"])
 @fl.login_required
 def update_reviews():
-    print("I made it to python!")
     if f.request.method == "POST":
-        print("Post")
         data = f.request.data.decode("utf-8")
         review_dict = json.loads(data)
 
         for key in review_dict.keys():
-            """update_comment = (
-                update(Comment)
-                .where(Comment.id == key)
-                .values(com=review_dict[key]["comment"])
-            )
-            update_rating = (
-                update(Comment)
-                .where(Comment.id == key)
-                .values(rating=review_dict[key]["rating"])
-            )"""
-
-            c = Comment.query.filter_by(id=key).first()
-            c.com = review_dict[key]["comment"]
-            c.rating = review_dict[key]["rating"]
-
-            db.session.commit()
-
-            print(c.com)
-            print(c.rating)
-
-            print("rating changed: " + str(review_dict[key]["rating"]))
-            print("Com changed: " + str(review_dict[key]["comment"]))
+            ele = Comment.query.filter_by(id=key).first()
+            if ele:
+                ele.com = review_dict[key]["comment"]
+                ele.rating = review_dict[key]["rating"]
 
         db.session.commit()
 
-        return "OK", 200
+    return "OK", 200
 
-    print("\n\n\n")
-    user = User.query.filter_by(name=fl.current_user.name).first()
 
-    hi = "hi"
-    if len(user.comments) != 0:
-        for c in user.comments:
-            info = {
-                "rating": c.rating,
-                "comment": c.com,
-                "movie": c.movie_id,
-            }
+@bp.route("/delete_reviews", methods=["GET", "POST"])
+@fl.login_required
+def delete_reviews():
+    print("made it to /deleted")
+    if f.request.method == "POST":
+        print("Delete start")
+        data = f.request.data.decode("utf-8")
+        deleted_list = json.loads(data)
 
-    return None
+    print("My data" + data)
+    print("listified" + str(deleted_list))
+
+    for key in deleted_list.keys():
+        print(key)
+        ele = Comment.query.filter_by(id=key).first()
+        db.session.delete(ele)
+
+        print(User.query.filter_by(name=fl.current_user.name).first().comments)
+    db.session.commit()
+    return "OK", 200
 
 
 app.register_blueprint(bp)
