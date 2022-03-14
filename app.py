@@ -23,6 +23,7 @@ import flask_sqlalchemy as f_sql
 from tmdb import get_tmdb, get_genre
 from pretty_data import pretty_data
 from wiki import get_wiki
+from sqlalchemy import update
 
 
 # Set up globals
@@ -305,6 +306,58 @@ def get_comments():
         return f.jsonify(c_dict)
     else:
         return f.jsonify("No comments yet")
+
+
+@bp.route("/update_reviews", methods=["GET", "POST"])
+@fl.login_required
+def update_reviews():
+    print("I made it to python!")
+    if f.request.method == "POST":
+        print("Post")
+        data = f.request.data.decode("utf-8")
+        review_dict = json.loads(data)
+
+        for key in review_dict.keys():
+            """update_comment = (
+                update(Comment)
+                .where(Comment.id == key)
+                .values(com=review_dict[key]["comment"])
+            )
+            update_rating = (
+                update(Comment)
+                .where(Comment.id == key)
+                .values(rating=review_dict[key]["rating"])
+            )"""
+
+            c = Comment.query.filter_by(id=key).first()
+            c.com = review_dict[key]["comment"]
+            c.rating = review_dict[key]["rating"]
+
+            db.session.commit()
+
+            print(c.com)
+            print(c.rating)
+
+            print("rating changed: " + str(review_dict[key]["rating"]))
+            print("Com changed: " + str(review_dict[key]["comment"]))
+
+        db.session.commit()
+
+        return "OK", 200
+
+    print("\n\n\n")
+    user = User.query.filter_by(name=fl.current_user.name).first()
+
+    hi = "hi"
+    if len(user.comments) != 0:
+        for c in user.comments:
+            info = {
+                "rating": c.rating,
+                "comment": c.com,
+                "movie": c.movie_id,
+            }
+
+    return None
 
 
 app.register_blueprint(bp)

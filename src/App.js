@@ -5,15 +5,16 @@ import ReactDOM from 'react-dom';
 import { FormControlUnstyled } from '@mui/base';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
-import { selectOptions } from '@testing-library/user-event/dist/select-options';
+import Button from '@mui/material/Button';
+import SendIcon from '@mui/material/Button';
 
-/*help from better.dev and mui.com*/
+/*help from better.dev and mui.com and pavel pov on discord*/
 
 
 
 function App() {
   let data = "";
+  let deleted = {};
 
   function render() {
     fetchComments().then(jsonData => setReview({ type: 'setState', payload: jsonData })).then(_ => GetComments())
@@ -31,10 +32,8 @@ function App() {
         return movieReviews
       case 'setState':
         movieReviews = initReducer(action.payload)
-        console.log(action)
         return movieReviews
       default:
-        console.log(action)
         throw new Error();
     }
 
@@ -49,16 +48,10 @@ function App() {
   async function fetchComments() {
     const response = await fetch('/get_comments');
     data = await response.json();
-    console.log(data)
-    console.log("fetch comments")
     return data
   }
 
   async function GetComments() {
-
-    /*const handleUpdate = (kvpair) => {
-      dispatchEvent({ type: 'setValue', key: kvpair[0], value: kvpair[1] }) //maybe need to set target to setReview
-    } */
 
     const handleRating = review => (event) => {
       let newValue = movieReviews[review]
@@ -83,7 +76,7 @@ function App() {
       ReactDOM.render(failScreen, document.getElementById('com'));
       return null
     }
-    console.log(movieReviews)
+
     let Boxes = Object.keys(movieReviews).map((review) => (
 
       <Box
@@ -106,31 +99,70 @@ function App() {
           />
           <TextField
             id="RatingBox"
+            label="rating"
             multiline
             maxRows={1}
             value={movieReviews[review].rating}
             onChange={handleRating(review)}
 
           />
+          <Button
+            onClick={() => {
+              { handleDelete(review) };
+            }}>Delete
+          </Button>
+
         </div>
       </Box>
 
     ))
 
-    ReactDOM.render(Boxes, document.getElementById('com'));
+    let submitButton = <button onClick={function () {
+      { handleSubmit() }
+    }} endIcon={<SendIcon />}>Submit Changes</button>
 
+    ReactDOM.render(submitButton, document.getElementById('com'));
+    ReactDOM.render(Boxes, document.getElementById('submit'));
+    ReactDOM.render(submitButton, document.getElementById('com'));
     return (null)
   }
+
+  function handleDelete(review) {
+    deleted.push(review);
+    console.log(deleted);
+    ReactDOM.render("Your comment will be deleted after submission", document.getElementById('del'));
+  }
+
+  function handleSubmit() {
+    console.log("reviewList1")
+    console.log(movieReviews)
+    console.log("Stringified")
+    console.log(JSON.stringify(movieReviews))
+    console.log(deleted)
+    fetch('/update_reviews',
+      { method: 'POST', body: JSON.stringify(movieReviews), })
+
+    //fetch('/delete_reviews',
+    //  { method: 'POST', body: str(deleted), })
+    return null;
+
+
+
+  }
+
 
   return (
     <div className="App">
       <h1>My Backstage</h1>
-      <div className="">
+      <div className="Edit Reviews">
         <button onClick={function () {
           { render() }
         }}
-        >Edit Comments</button>
+        >Edit Reviews</button>
         <p id="com"></p>
+        <p id="submit"></p>
+        <p id="del"></p>
+
       </div>
     </div>
   );
