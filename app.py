@@ -277,13 +277,14 @@ bp = f.Blueprint(
 @bp.route("/profile", methods=["GET", "POST"])
 @fl.login_required
 def index():
-
+    """set up profile api"""
     return f.render_template("index.html")
 
 
 @bp.route("/get_comments", methods=["GET", "POST"])
 @fl.login_required
 def get_comments():
+    """Set up edit comment boxes on button press"""
     print("\n\n\n")
     user = User.query.filter_by(name=fl.current_user.name).first()
     c_dict = {}
@@ -304,6 +305,7 @@ def get_comments():
 @bp.route("/update_reviews", methods=["GET", "POST"])
 @fl.login_required
 def update_reviews():
+    """Fetch and update database on submit"""
     if f.request.method == "POST":
         data = f.request.data.decode("utf-8")
         review_dict = json.loads(data)
@@ -322,7 +324,7 @@ def update_reviews():
 @bp.route("/delete_reviews", methods=["GET", "POST"])
 @fl.login_required
 def delete_reviews():
-    print("made it to /deleted")
+    """FetchDelete from database on submit"""
     if f.request.method == "POST":
         print("Delete start")
         data = f.request.data.decode("utf-8")
@@ -333,8 +335,8 @@ def delete_reviews():
 
     for key in deleted_list.keys():
         print(key)
-        ele = Comment.query.filter_by(id=key).first()
-        db.session.delete(ele)
+        comment = Comment.query.filter_by(id=key).first()
+        db.session.delete(comment)
 
         print(User.query.filter_by(name=fl.current_user.name).first().comments)
     db.session.commit()
